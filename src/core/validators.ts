@@ -128,10 +128,12 @@ export function validatePayload(parsedJson: unknown): ValidationResult {
   }
 
   // --- Validate Context Payload ---
+  const nested = (raw.context && typeof raw.context === 'object') ? (raw.context as Record<string, unknown>) : null;
 
   // 5. local_time validation (HH:MM)
-  if ('local_time' in raw) {
-    const rawTime = String(raw.local_time).trim();
+  const timeVal = nested && 'local_time' in nested ? nested.local_time : ('local_time' in raw ? raw.local_time : undefined);
+  if (timeVal !== undefined) {
+    const rawTime = String(timeVal).trim();
     const timeFormatRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
     if (timeFormatRegex.test(rawTime)) {
       context.local_time = rawTime;
@@ -143,14 +145,14 @@ export function validatePayload(parsedJson: unknown): ValidationResult {
   }
 
   // 6. stadium_capacity_limit validation
-  if ('stadium_capacity_limit' in raw) {
-    const rawCapacity = raw.stadium_capacity_limit;
-    if (rawCapacity === null || rawCapacity === undefined) {
+  const capacityVal = nested && 'stadium_capacity_limit' in nested ? nested.stadium_capacity_limit : ('stadium_capacity_limit' in raw ? raw.stadium_capacity_limit : undefined);
+  if (capacityVal !== undefined) {
+    if (capacityVal === null) {
       errors.push("Missing 'stadium_capacity_limit', using fallback default 80000.");
     } else {
-      const parsedCapacity = Number(rawCapacity);
+      const parsedCapacity = Number(capacityVal);
       if (Number.isNaN(parsedCapacity) || !Number.isFinite(parsedCapacity) || parsedCapacity <= 0) {
-        errors.push(`Invalid 'stadium_capacity_limit' (${rawCapacity}), defaulting to 80000.`);
+        errors.push(`Invalid 'stadium_capacity_limit' (${capacityVal}), defaulting to 80000.`);
       } else {
         context.stadium_capacity_limit = Math.floor(parsedCapacity);
       }
@@ -160,23 +162,13 @@ export function validatePayload(parsedJson: unknown): ValidationResult {
   }
 
   // 7. language_preference validation
-  if ('language_preference' in raw) {
-    const rawLang = String(raw.language_preference).trim().toLowerCase();
+  const langVal = nested && 'language_preference' in nested ? nested.language_preference : ('language_preference' in raw ? raw.language_preference : undefined);
+  if (langVal !== undefined) {
+    const rawLang = String(langVal).trim().toLowerCase();
     if (rawLang === 'en' || rawLang === 'es' || rawLang === 'fr' || rawLang === 'ar') {
       context.language_preference = rawLang;
     } else {
       errors.push(`Unsupported language '${rawLang}', fallback to 'en'. Supported: en, es, fr, ar.`);
-    }
-  } else {
-    // Check for "context" sub-object support to be extra resilient
-    const nestedContext = raw.context as Record<string, unknown> | undefined;
-    if (nestedContext && typeof nestedContext === 'object') {
-      if ('language_preference' in nestedContext) {
-        const nestedLang = String(nestedContext.language_preference).trim().toLowerCase();
-        if (nestedLang === 'en' || nestedLang === 'es' || nestedLang === 'fr' || nestedLang === 'ar') {
-          context.language_preference = nestedLang;
-        }
-      }
     }
   }
 

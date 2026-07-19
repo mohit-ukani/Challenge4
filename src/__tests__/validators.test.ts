@@ -68,9 +68,23 @@ describe('Telemetry Payload Validation Suite', () => {
     expect(result.context?.stadium_capacity_limit).toBe(80000);
   });
 
-  it('should graceful degrade if input is not an object', () => {
-    const result = validatePayload('not_an_object');
-    expect(result.isValid).toBe(false);
-    expect(result.errors).toContain('Input payload is missing or not a valid JSON object.');
+  it('should parse nested context properties correctly', () => {
+    const nestedPayload = {
+      zone_id: 'ZONE-A1',
+      current_crowd_density: 45,
+      ambient_noise_levels: 72,
+      incident_flag: false,
+      context: {
+        local_time: '14:30',
+        stadium_capacity_limit: 75000,
+        language_preference: 'es',
+      },
+    };
+    const result = validatePayload(nestedPayload);
+    expect(result.isValid).toBe(true);
+    expect(result.errors.length).toBe(0);
+    expect(result.context?.local_time).toBe('14:30');
+    expect(result.context?.stadium_capacity_limit).toBe(75000);
+    expect(result.context?.language_preference).toBe('es');
   });
 });

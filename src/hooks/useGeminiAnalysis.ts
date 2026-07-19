@@ -38,8 +38,19 @@ export function useGeminiAnalysis(
   const prevLocaleRef = useRef<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const cacheRef = useRef<Record<string, { result: GeminiAnalysisResult; timestamp: number }>>({});
 
   const runAnalysis = useCallback(async () => {
+    // Generate a unique cache key based on current telemetry state and locale configuration
+    const cacheKey = `${systemStatus}_${telemetry.zone_id}_${locale}_${telemetry.current_crowd_density}_${telemetry.ambient_noise_levels}_${telemetry.incident_flag}`;
+
+    if (cacheRef.current[cacheKey]) {
+      setResult(cacheRef.current[cacheKey].result);
+      setAnalysisState('success');
+      setLastAnalyzedAt(cacheRef.current[cacheKey].timestamp);
+      return;
+    }
+
     // Cancel any in-flight request
     if (abortRef.current) abortRef.current.abort();
     abortRef.current = new AbortController();
@@ -54,9 +65,16 @@ export function useGeminiAnalysis(
         systemStatus,
         locale
       );
+      
+      // Store in cache
+      cacheRef.current[cacheKey] = {
+        result: analysisResult,
+        timestamp: Date.now()
+      };
+
       setResult(analysisResult);
       setAnalysisState('success');
-      setLastAnalyzedAt(Date.now());
+      setLastAnalyzedAt(cacheRef.current[cacheKey].timestamp);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Unknown error occurred.';
       // Don't surface abort errors (user triggered a new request)

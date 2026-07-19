@@ -68,7 +68,9 @@ export function useTelemetryEngine(initialLocale: Locale = 'en'): TelemetryEngin
       
       // If the incoming context doesn't explicitly define lang preference, keep current state locale
       const rawObj = parsedObj as Record<string, unknown>;
-      if (!('language_preference' in rawObj)) {
+      const nestedContext = (rawObj.context && typeof rawObj.context === 'object') ? (rawObj.context as Record<string, unknown>) : null;
+      const hasLangPref = ('language_preference' in rawObj) || (nestedContext && 'language_preference' in nestedContext);
+      if (!hasLangPref) {
         targetContext.language_preference = currentLocale;
       }
 
