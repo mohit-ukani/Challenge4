@@ -4,12 +4,12 @@
  * - 'warning': Elevated density (61-80%) or high noise levels.
  * - 'alert': Critical density (> 80%) or active security incident.
  */
-export type SystemStatus = 'nominal' | 'warning' | 'alert';
+export type SystemStatus = "nominal" | "warning" | "alert";
 
 /**
  * Valid language/locale preferences for localized telemetry warnings and traces.
  */
-export type Locale = 'en' | 'es' | 'fr' | 'ar';
+export type Locale = "en" | "es" | "fr" | "ar";
 
 /**
  * Core Telemetry Data Payload mapping to physical stadium sensor telemetry.

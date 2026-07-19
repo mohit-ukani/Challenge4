@@ -1,8 +1,13 @@
-import { useReducer, useState, useCallback } from 'react';
-import { StadiumState, Locale, TelemetryPayload, ContextPayload } from '../core/types';
-import { telemetryReducer, getInitialState } from '../core/telemetry-engine';
-import { sanitizeInput, decodeSanitizedText } from '../core/input-sanitizer';
-import { validatePayload } from '../core/validators';
+import { useReducer, useState, useCallback } from "react";
+import {
+  StadiumState,
+  Locale,
+  TelemetryPayload,
+  ContextPayload,
+} from "../core/types";
+import { telemetryReducer, getInitialState } from "../core/telemetry-engine";
+import { sanitizeInput, decodeSanitizedText } from "../core/input-sanitizer";
+import { validatePayload } from "../core/validators";
 
 export interface TelemetryEngineHook {
   state: StadiumState;
@@ -10,7 +15,10 @@ export interface TelemetryEngineHook {
   validationPassed: boolean | null;
   hadSanitizationAlert: boolean;
   updateTelemetryAndContext: (rawJsonString: string) => boolean;
-  updateDirectState: (telemetry: TelemetryPayload, context: ContextPayload) => void;
+  updateDirectState: (
+    telemetry: TelemetryPayload,
+    context: ContextPayload,
+  ) => void;
   setLocale: (locale: Locale) => void;
   reset: () => void;
 }
@@ -19,11 +27,19 @@ export interface TelemetryEngineHook {
  * Custom React Hook connecting presentation components to the Telemetry Engine logic.
  * Encapsulates reducer logic, input sanitization, and verification pipelines.
  */
-export function useTelemetryEngine(initialLocale: Locale = 'en'): TelemetryEngineHook {
-  const [state, dispatch] = useReducer(telemetryReducer, getInitialState(initialLocale));
+export function useTelemetryEngine(
+  initialLocale: Locale = "en",
+): TelemetryEngineHook {
+  const [state, dispatch] = useReducer(
+    telemetryReducer,
+    getInitialState(initialLocale),
+  );
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
-  const [validationPassed, setValidationPassed] = useState<boolean | null>(null);
-  const [hadSanitizationAlert, setHadSanitizationAlert] = useState<boolean>(false);
+  const [validationPassed, setValidationPassed] = useState<boolean | null>(
+    null,
+  );
+  const [hadSanitizationAlert, setHadSanitizationAlert] =
+    useState<boolean>(false);
 
   /**
    * Main entry pipeline for playground data updates.
@@ -32,79 +48,97 @@ export function useTelemetryEngine(initialLocale: Locale = 'en'): TelemetryEngin
    * @param rawJsonString Raw input string from textarea
    * @returns true if state successfully updated, false otherwise
    */
-  const updateTelemetryAndContext = useCallback((rawJsonString: string): boolean => {
-    // 1. Sanitization (XSS Defense)
-    const { sanitizedText, hadInjection } = sanitizeInput(rawJsonString);
-    setHadSanitizationAlert(hadInjection);
+  const updateTelemetryAndContext = useCallback(
+    (rawJsonString: string): boolean => {
+      // 1. Sanitization (XSS Defense)
+      const { sanitizedText, hadInjection } = sanitizeInput(rawJsonString);
+      setHadSanitizationAlert(hadInjection);
 
-    // Revert escaping just to perform JSON parse safely
-    const unescapedText = decodeSanitizedText(sanitizedText);
+      // Revert escaping just to perform JSON parse safely
+      const unescapedText = decodeSanitizedText(sanitizedText);
 
-    // 2. Safe Parsing
-    let parsedObj: unknown;
-    try {
-      if (unescapedText.trim() === '') {
-        setValidationErrors(['Payload input is empty.']);
+      // 2. Safe Parsing
+      let parsedObj: unknown;
+      try {
+        if (unescapedText.trim() === "") {
+          setValidationErrors(["Payload input is empty."]);
+          setValidationPassed(false);
+          return false;
+        }
+        parsedObj = JSON.parse(unescapedText);
+      } catch (err) {
+        setValidationErrors([`Invalid JSON format: ${(err as Error).message}`]);
         setValidationPassed(false);
         return false;
       }
-      parsedObj = JSON.parse(unescapedText);
-    } catch (err) {
-      setValidationErrors([`Invalid JSON format: ${(err as Error).message}`]);
-      setValidationPassed(false);
-      return false;
-    }
 
-    // 3. Validation & Type Coercion (Edge-case resiliency)
-    const validation = validatePayload(parsedObj);
-    setValidationErrors(validation.errors);
-    setValidationPassed(validation.errors.length === 0);
+      // 3. Validation & Type Coercion (Edge-case resiliency)
+      const validation = validatePayload(parsedObj);
+      setValidationErrors(validation.errors);
+      setValidationPassed(validation.errors.length === 0);
 
-    // Even if validation had warnings/coercions, we can still construct a payload
-    if (validation.isValid && validation.telemetry && validation.context) {
-      // Maintain selected locale instead of overriding with default unless provided
-      const currentLocale = state.context.language_preference;
-      const targetContext = { ...validation.context };
-      
-      // If the incoming context doesn't explicitly define lang preference, keep current state locale
-      const rawObj = parsedObj as Record<string, unknown>;
-      const nestedContext = (rawObj.context && typeof rawObj.context === 'object') ? (rawObj.context as Record<string, unknown>) : null;
-      const hasLangPref = ('language_preference' in rawObj) || (nestedContext && 'language_preference' in nestedContext);
-      if (!hasLangPref) {
-        targetContext.language_preference = currentLocale;
+      // Print warnings to console for system audit alignment
+      if (validation.errors.length > 0) {
+        validation.errors.forEach((err) => {
+          console.warn(`! ${err}`);
+        });
       }
 
-      dispatch({
-        type: 'UPDATE_STATE',
-        payload: {
-          telemetry: validation.telemetry,
-          context: targetContext,
-        },
-      });
-      return true;
-    }
+      // Even if validation had warnings/coercions, we can still construct a payload
+      if (validation.isValid && validation.telemetry && validation.context) {
+        // Maintain selected locale instead of overriding with default unless provided
+        const currentLocale = state.context.language_preference;
+        const targetContext = { ...validation.context };
 
-    return false;
-  }, [state.context.language_preference]);
+        // If the incoming context doesn't explicitly define lang preference, keep current state locale
+        const rawObj = parsedObj as Record<string, unknown>;
+        const nestedContext =
+          rawObj.context && typeof rawObj.context === "object"
+            ? (rawObj.context as Record<string, unknown>)
+            : null;
+        const hasLangPref =
+          "language_preference" in rawObj ||
+          (nestedContext && "language_preference" in nestedContext);
+        if (!hasLangPref) {
+          targetContext.language_preference = currentLocale;
+        }
+
+        dispatch({
+          type: "UPDATE_STATE",
+          payload: {
+            telemetry: validation.telemetry,
+            context: targetContext,
+          },
+        });
+        return true;
+      }
+
+      return false;
+    },
+    [state.context.language_preference],
+  );
 
   /**
    * Directly sets the telemetry and context state. Useful for preset scenarios.
    */
-  const updateDirectState = useCallback((telemetry: TelemetryPayload, context: ContextPayload) => {
-    setValidationErrors([]);
-    setValidationPassed(true);
-    setHadSanitizationAlert(false);
-    dispatch({
-      type: 'UPDATE_STATE',
-      payload: { telemetry, context },
-    });
-  }, []);
+  const updateDirectState = useCallback(
+    (telemetry: TelemetryPayload, context: ContextPayload) => {
+      setValidationErrors([]);
+      setValidationPassed(true);
+      setHadSanitizationAlert(false);
+      dispatch({
+        type: "UPDATE_STATE",
+        payload: { telemetry, context },
+      });
+    },
+    [],
+  );
 
   /**
    * Sets the language preference locale.
    */
   const setLocale = useCallback((locale: Locale) => {
-    dispatch({ type: 'SET_LOCALE', payload: locale });
+    dispatch({ type: "SET_LOCALE", payload: locale });
   }, []);
 
   /**
@@ -114,7 +148,7 @@ export function useTelemetryEngine(initialLocale: Locale = 'en'): TelemetryEngin
     setValidationErrors([]);
     setValidationPassed(null);
     setHadSanitizationAlert(false);
-    dispatch({ type: 'RESET' });
+    dispatch({ type: "RESET" });
   }, []);
 
   return {

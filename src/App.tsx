@@ -1,13 +1,13 @@
-import React from 'react';
-import { useTelemetryEngine } from './hooks/useTelemetryEngine';
-import { useGeminiAnalysis } from './hooks/useGeminiAnalysis';
-import { Header } from './components/Header';
-import { DashboardPanel } from './components/DashboardPanel';
-import { AlertFeed } from './components/AlertFeed';
-import { ReasoningChain } from './components/ReasoningChain';
-import { AIAnalystPanel } from './components/AIAnalystPanel';
-import { PlaygroundTerminal } from './components/PlaygroundTerminal';
-import { SkipLink } from './components/SkipLink';
+import React from "react";
+import { useTelemetryEngine } from "./hooks/useTelemetryEngine";
+import { useGeminiAnalysis } from "./hooks/useGeminiAnalysis";
+import { Header } from "./components/Header";
+import { DashboardPanel } from "./components/DashboardPanel";
+import { AlertFeed } from "./components/AlertFeed";
+import { ReasoningChain } from "./components/ReasoningChain";
+import { AIAnalystPanel } from "./components/AIAnalystPanel";
+import { PlaygroundTerminal } from "./components/PlaygroundTerminal";
+import { SkipLink } from "./components/SkipLink";
 
 /**
  * Root Application Container.
@@ -23,12 +23,22 @@ export const App: React.FC = () => {
     updateDirectState,
     setLocale,
     reset,
-  } = useTelemetryEngine('en');
+  } = useTelemetryEngine("en");
 
   const locale = state.context.language_preference;
 
-  const { result: aiResult, analysisState, errorMessage, lastAnalyzedAt, triggerAnalysis } =
-    useGeminiAnalysis(state.telemetry, state.context, state.system_status, locale);
+  const {
+    result: aiResult,
+    analysisState,
+    errorMessage,
+    lastAnalyzedAt,
+    triggerAnalysis,
+  } = useGeminiAnalysis(
+    state.telemetry,
+    state.context,
+    state.system_status,
+    locale,
+  );
 
   return (
     <>
@@ -37,8 +47,7 @@ export const App: React.FC = () => {
 
       <div className="app-container">
         {/* Main interactive panel */}
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          
+        <div style={{ display: "flex", flexDirection: "column" }}>
           {/* Top banner / Info bar */}
           <Header
             currentLocale={locale}
@@ -57,9 +66,9 @@ export const App: React.FC = () => {
 
             <div
               style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-                gap: 'var(--space-6)',
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+                gap: "var(--space-6)",
               }}
             >
               <AlertFeed

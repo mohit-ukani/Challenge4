@@ -1,24 +1,32 @@
-import { StadiumState, TelemetryPayload, ContextPayload, Locale } from './types';
-import { evaluateTelemetry } from './alert-evaluator';
+import {
+  StadiumState,
+  TelemetryPayload,
+  ContextPayload,
+  Locale,
+} from "./types";
+import { evaluateTelemetry } from "./alert-evaluator";
 
 export type TelemetryAction =
-  | { type: 'UPDATE_STATE'; payload: { telemetry: TelemetryPayload; context: ContextPayload } }
-  | { type: 'SET_LOCALE'; payload: Locale }
-  | { type: 'RESET' };
+  | {
+      type: "UPDATE_STATE";
+      payload: { telemetry: TelemetryPayload; context: ContextPayload };
+    }
+  | { type: "SET_LOCALE"; payload: Locale }
+  | { type: "RESET" };
 
 /**
  * Creates the initial nominal Stadium state.
  */
-export function getInitialState(locale: Locale = 'en'): StadiumState {
+export function getInitialState(locale: Locale = "en"): StadiumState {
   const defaultTelemetry: TelemetryPayload = {
-    zone_id: 'Z-01',
+    zone_id: "Z-01",
     current_crowd_density: 45,
     ambient_noise_levels: 72,
     incident_flag: false,
   };
 
   const defaultContext: ContextPayload = {
-    local_time: '18:00',
+    local_time: "18:00",
     stadium_capacity_limit: 80000,
     language_preference: locale,
   };
@@ -43,14 +51,17 @@ export function getInitialState(locale: Locale = 'en'): StadiumState {
  * @param action Triggered TelemetryAction
  * @returns New StadiumState (immutable update)
  */
-export function telemetryReducer(state: StadiumState, action: TelemetryAction): StadiumState {
+export function telemetryReducer(
+  state: StadiumState,
+  action: TelemetryAction,
+): StadiumState {
   switch (action.type) {
-    case 'UPDATE_STATE': {
+    case "UPDATE_STATE": {
       const { telemetry, context } = action.payload;
-      
+
       // Calculate evaluation on updated state
       const evaluation = evaluateTelemetry(telemetry, context);
-      
+
       return {
         telemetry,
         context,
@@ -61,7 +72,7 @@ export function telemetryReducer(state: StadiumState, action: TelemetryAction): 
       };
     }
 
-    case 'SET_LOCALE': {
+    case "SET_LOCALE": {
       const updatedContext: ContextPayload = {
         ...state.context,
         language_preference: action.payload,
@@ -79,7 +90,7 @@ export function telemetryReducer(state: StadiumState, action: TelemetryAction): 
       };
     }
 
-    case 'RESET':
+    case "RESET":
       return getInitialState();
 
     default:

@@ -1,5 +1,5 @@
-import React from 'react';
-import { useI18n } from '../hooks/useI18n';
+import React from "react";
+import { useI18n } from "../hooks/useI18n";
 
 interface SkipLinkProps {
   locale: string;
@@ -11,12 +11,12 @@ interface SkipLinkProps {
  */
 export const SkipLink: React.FC<SkipLinkProps> = React.memo(({ locale }) => {
   const { t } = useI18n(locale as any);
-  
+
   return (
     <a href="#main-dashboard" className="skip-link">
-      {t('ui.skip_link')}
+      {t("ui.skip_link")}
     </a>
   );
 });
 
-SkipLink.displayName = 'SkipLink';
+SkipLink.displayName = "SkipLink";

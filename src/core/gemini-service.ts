@@ -1,4 +1,4 @@
-import { TelemetryPayload, ContextPayload, SystemStatus } from './types';
+import { TelemetryPayload, ContextPayload, SystemStatus } from "./types";
 
 export interface GeminiAnalysisResult {
   briefing: string;
@@ -8,8 +8,8 @@ export interface GeminiAnalysisResult {
 }
 
 const GEMINI_API_URL = import.meta.env.PROD
-  ? 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent'
-  : '/api-gemini/v1beta/models/gemini-3.5-flash:generateContent';
+  ? "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent"
+  : "/api-gemini/v1beta/models/gemini-3.5-flash:generateContent";
 
 /**
  * Builds a structured operational prompt for the Gemini model.
@@ -19,9 +19,14 @@ function buildPrompt(
   telemetry: TelemetryPayload,
   context: ContextPayload,
   systemStatus: SystemStatus,
-  locale: string
+  locale: string,
 ): string {
-  const statusLabel = systemStatus === 'alert' ? 'CRITICAL ALERT' : systemStatus === 'warning' ? 'WARNING' : 'NOMINAL';
+  const statusLabel =
+    systemStatus === "alert"
+      ? "CRITICAL ALERT"
+      : systemStatus === "warning"
+        ? "WARNING"
+        : "NOMINAL";
 
   return `You are an AI Situational Analyst for a Smart Stadium Operations Co-Pilot system. 
 You assist the Venue Security Head and Volunteer Lead with real-time crowd management decisions during live tournament events.
@@ -30,12 +35,12 @@ CURRENT TELEMETRY SNAPSHOT:
 - Stadium Zone: ${telemetry.zone_id}
 - Crowd Density: ${telemetry.current_crowd_density}% (Alert threshold: >80%, Warning: >60%)
 - Ambient Noise Level: ${telemetry.ambient_noise_levels} dB (Warning threshold: >95 dB)
-- Active Security Incident: ${telemetry.incident_flag ? 'YES — INCIDENT FLAGGED' : 'No'}
+- Active Security Incident: ${telemetry.incident_flag ? "YES — INCIDENT FLAGGED" : "No"}
 - Venue Local Time: ${context.local_time}
 - Stadium Capacity Limit: ${context.stadium_capacity_limit.toLocaleString()} persons
 - System Status: ${statusLabel}
 
-TASK: Generate a concise, professional situational analysis briefing in ${locale === 'es' ? 'Spanish' : locale === 'fr' ? 'French' : locale === 'ar' ? 'Arabic' : 'English'}.
+TASK: Generate a concise, professional situational analysis briefing in ${locale === "es" ? "Spanish" : locale === "fr" ? "French" : locale === "ar" ? "Arabic" : "English"}.
 
 Respond ONLY with a valid JSON object in this exact format, no markdown, no code blocks:
 {
@@ -62,19 +67,21 @@ export async function generateSituationalAnalysis(
   telemetry: TelemetryPayload,
   context: ContextPayload,
   systemStatus: SystemStatus,
-  locale: string
+  locale: string,
 ): Promise<GeminiAnalysisResult> {
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
   if (!apiKey) {
-    throw new Error('VITE_GEMINI_API_KEY is not set. Add it to your .env file.');
+    throw new Error(
+      "VITE_GEMINI_API_KEY is not set. Add it to your .env file.",
+    );
   }
 
   const prompt = buildPrompt(telemetry, context, systemStatus, locale);
 
   const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       contents: [{ parts: [{ text: prompt }] }],
       generationConfig: {
@@ -82,27 +89,38 @@ export async function generateSituationalAnalysis(
         topK: 32,
         topP: 0.9,
         maxOutputTokens: 8192,
-        responseMimeType: 'application/json',
+        responseMimeType: "application/json",
         responseSchema: {
-          type: 'OBJECT',
+          type: "OBJECT",
           properties: {
-            briefing: { type: 'STRING' },
-            riskLevel: { type: 'STRING' },
+            briefing: { type: "STRING" },
+            riskLevel: { type: "STRING" },
             recommendedActions: {
-              type: 'ARRAY',
-              items: { type: 'STRING' },
+              type: "ARRAY",
+              items: { type: "STRING" },
             },
             crowdManagementTips: {
-              type: 'ARRAY',
-              items: { type: 'STRING' },
+              type: "ARRAY",
+              items: { type: "STRING" },
             },
           },
-          required: ['briefing', 'riskLevel', 'recommendedActions', 'crowdManagementTips'],
+          required: [
+            "briefing",
+            "riskLevel",
+            "recommendedActions",
+            "crowdManagementTips",
+          ],
         },
       },
       safetySettings: [
-        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+        {
+          category: "HARM_CATEGORY_HARASSMENT",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE",
+        },
+        {
+          category: "HARM_CATEGORY_HATE_SPEECH",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE",
+        },
       ],
     }),
   });
@@ -113,30 +131,38 @@ export async function generateSituationalAnalysis(
   }
 
   const data = await response.json();
-  const rawText: string = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+  const rawText: string =
+    data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
 
   if (!rawText) {
-    throw new Error('Gemini returned an empty response.');
+    throw new Error("Gemini returned an empty response.");
   }
 
   // Strip any accidental markdown code fences the model may have added
-  const cleaned = rawText.trim()
-    .replace(/^```(?:json)?/i, '')
-    .replace(/```$/i, '')
+  const cleaned = rawText
+    .trim()
+    .replace(/^```(?:json)?/i, "")
+    .replace(/```$/i, "")
     .trim();
 
   let parsed: GeminiAnalysisResult;
   try {
     parsed = JSON.parse(cleaned);
   } catch {
-    throw new Error(`Failed to parse Gemini response as JSON: ${cleaned.slice(0, 200)}`);
+    throw new Error(
+      `Failed to parse Gemini response as JSON: ${cleaned.slice(0, 200)}`,
+    );
   }
 
   // Defensive coercion — ensure arrays are arrays
   return {
-    briefing: parsed.briefing ?? 'Analysis unavailable.',
+    briefing: parsed.briefing ?? "Analysis unavailable.",
     riskLevel: parsed.riskLevel ?? systemStatus,
-    recommendedActions: Array.isArray(parsed.recommendedActions) ? parsed.recommendedActions : [],
-    crowdManagementTips: Array.isArray(parsed.crowdManagementTips) ? parsed.crowdManagementTips : [],
+    recommendedActions: Array.isArray(parsed.recommendedActions)
+      ? parsed.recommendedActions
+      : [],
+    crowdManagementTips: Array.isArray(parsed.crowdManagementTips)
+      ? parsed.crowdManagementTips
+      : [],
   };
 }

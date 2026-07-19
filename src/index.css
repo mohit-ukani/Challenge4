@@ -1,49 +1,61 @@
 /* OKLCH Design System Tokens for Smart Stadium Operations Co-Pilot */
 :root {
   /* Color Ramp (Zinc/Slate base) */
-  --bg-primary: oklch(0.13 0.005 260);         /* App background (near-black slate) */
-  --bg-surface: oklch(0.18 0.008 260);         /* Card / panel surfaces */
+  --bg-primary: oklch(0.13 0.005 260); /* App background (near-black slate) */
+  --bg-surface: oklch(0.18 0.008 260); /* Card / panel surfaces */
   --bg-surface-elevated: oklch(0.22 0.01 260); /* Elevated components, inputs */
-  --border: oklch(0.28 0.008 260);             /* Subtle divider borders */
-  --border-focus: oklch(0.65 0.2 165);         /* Emerald border for active state/focus */
+  --border: oklch(0.28 0.008 260); /* Subtle divider borders */
+  --border-focus: oklch(
+    0.65 0.2 165
+  ); /* Emerald border for active state/focus */
 
   /* Text & Labels (All contrasts strictly >= 4.5:1, typical body is 7:1+) */
-  --text-primary: oklch(0.95 0.005 260);       /* Monochromatic off-white */
-  --text-secondary: oklch(0.72 0.01 260);      /* Muted secondary text */
-  --text-tertiary: oklch(0.55 0.01 260);       /* Disabled/placeholder text */
+  --text-primary: oklch(0.95 0.005 260); /* Monochromatic off-white */
+  --text-secondary: oklch(0.72 0.01 260); /* Muted secondary text */
+  --text-tertiary: oklch(0.55 0.01 260); /* Disabled/placeholder text */
 
   /* Status Colors (Calibrated for high visibility and contrast) */
-  --accent: oklch(0.65 0.2 165);               /* Emerald status (nominal) */
-  --accent-warning: oklch(0.78 0.15 85);       /* Amber status (warning) */
-  --accent-danger: oklch(0.62 0.22 25);        /* Red status (alert) */
+  --accent: oklch(0.65 0.2 165); /* Emerald status (nominal) */
+  --accent-warning: oklch(0.78 0.15 85); /* Amber status (warning) */
+  --accent-danger: oklch(0.62 0.22 25); /* Red status (alert) */
 
-  --bg-danger-mute: oklch(0.22 0.05 25);       /* Muted red for warning card background */
-  --bg-warning-mute: oklch(0.22 0.04 85);      /* Muted amber for warning card background */
+  --bg-danger-mute: oklch(
+    0.22 0.05 25
+  ); /* Muted red for warning card background */
+  --bg-warning-mute: oklch(
+    0.22 0.04 85
+  ); /* Muted amber for warning card background */
 
   /* Spacing Scale (4px base) */
-  --space-1: 0.25rem;  /* 4px */
-  --space-2: 0.5rem;   /* 8px */
-  --space-3: 0.75rem;  /* 12px */
-  --space-4: 1rem;     /* 16px */
-  --space-6: 1.5rem;   /* 24px */
-  --space-8: 2rem;     /* 32px */
-  --space-12: 3rem;    /* 48px */
-  --space-16: 4rem;    /* 64px */
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem; /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /* 16px */
+  --space-6: 1.5rem; /* 24px */
+  --space-8: 2rem; /* 32px */
+  --space-12: 3rem; /* 48px */
+  --space-16: 4rem; /* 64px */
 
   /* Corner Radius - Strict Uniform Sharp Grid System */
   --radius: 2px;
 
   /* Typography Stack */
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  
+  --font-sans:
+    system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+
   /* Transition / Motion Speed */
   --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
   --transition-normal: 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* CSS Reset */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -64,7 +76,10 @@ body {
 }
 
 /* Base Headings & Hierarchy */
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--text-primary);
@@ -223,7 +238,7 @@ h1, h2, h3, h4 {
     transition-duration: 0s !important;
     transition-delay: 0s !important;
   }
-  
+
   .pulsing-dot {
     animation: none !important;
   }
@@ -241,7 +256,9 @@ h1, h2, h3, h4 {
 }
 
 @keyframes ai-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* AI Analyst Panel — Skeleton shimmer */
@@ -258,20 +275,36 @@ h1, h2, h3, h4 {
 }
 
 @keyframes ai-shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* Status Pulsing Dot Animation */
 @keyframes status-pulse {
-  0% { opacity: 0.4; transform: scale(0.9); }
-  50% { opacity: 1; transform: scale(1.1); }
-  100% { opacity: 0.4; transform: scale(0.9); }
+  0% {
+    opacity: 0.4;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 0.4;
+    transform: scale(0.9);
+  }
 }
 
 /* Incident Alarms Blink Animation */
 @keyframes blink {
-  0% { opacity: 0.2; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 0.2;
+  }
+  100% {
+    opacity: 1;
+  }
 }
-

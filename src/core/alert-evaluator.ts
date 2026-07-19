@@ -1,5 +1,5 @@
-import { TelemetryPayload, ContextPayload, SystemStatus } from './types';
-import { translate } from './i18n';
+import { TelemetryPayload, ContextPayload, SystemStatus } from "./types";
+import { translate } from "./i18n";
 
 export interface EvaluationResult {
   system_status: SystemStatus;
@@ -21,11 +21,11 @@ export interface EvaluationResult {
  */
 export function evaluateTelemetry(
   telemetry: TelemetryPayload,
-  context: ContextPayload
+  context: ContextPayload,
 ): EvaluationResult {
   const warnings: string[] = [];
   const reasoningSteps: string[] = [];
-  let status: SystemStatus = 'nominal';
+  let status: SystemStatus = "nominal";
   const lang = context.language_preference;
 
   const params = {
@@ -40,36 +40,36 @@ export function evaluateTelemetry(
   const isIncidentAlert = telemetry.incident_flag;
 
   if (isCrowdDensityAlert || isIncidentAlert) {
-    status = 'alert';
-    
+    status = "alert";
+
     if (isCrowdDensityAlert) {
-      const msg = translate('reasoning.density_alert', params, lang);
+      const msg = translate("reasoning.density_alert", params, lang);
       warnings.push(msg);
       reasoningSteps.push(msg);
     }
-    
+
     if (isIncidentAlert) {
-      const msg = translate('reasoning.incident_flag', params, lang);
+      const msg = translate("reasoning.incident_flag", params, lang);
       warnings.push(msg);
       reasoningSteps.push(msg);
     }
-  } 
+  }
   // Check Warning Conditions
   else {
     const isCrowdDensityWarning = telemetry.current_crowd_density > 60;
     const isNoiseWarning = telemetry.ambient_noise_levels > 95;
 
     if (isCrowdDensityWarning || isNoiseWarning) {
-      status = 'warning';
-      
+      status = "warning";
+
       if (isCrowdDensityWarning) {
-        const msg = translate('reasoning.density_warning', params, lang);
+        const msg = translate("reasoning.density_warning", params, lang);
         warnings.push(msg);
         reasoningSteps.push(msg);
       }
-      
+
       if (isNoiseWarning) {
-        const msg = translate('reasoning.noise_warning', params, lang);
+        const msg = translate("reasoning.noise_warning", params, lang);
         warnings.push(msg);
         reasoningSteps.push(msg);
       }
@@ -77,13 +77,13 @@ export function evaluateTelemetry(
   }
 
   // Handle Nominal Case
-  if (status === 'nominal') {
-    const msg = translate('reasoning.nominal', params, lang);
+  if (status === "nominal") {
+    const msg = translate("reasoning.nominal", params, lang);
     reasoningSteps.push(msg);
   }
 
   // Combine reasoning steps into a cohesive explicit tracing string
-  const reasoning_chain = reasoningSteps.join(' ');
+  const reasoning_chain = reasoningSteps.join(" ");
 
   return {
     system_status: status,

@@ -1,4 +1,4 @@
-import { SanitizationResult } from './types';
+import { SanitizationResult } from "./types";
 
 /**
  * Strict sanitation routine for the data playground textarea input.
@@ -9,7 +9,7 @@ import { SanitizationResult } from './types';
  */
 export function sanitizeInput(rawInput: string): SanitizationResult {
   if (!rawInput) {
-    return { sanitizedText: '', hadInjection: false };
+    return { sanitizedText: "", hadInjection: false };
   }
 
   let cleaned = rawInput;
@@ -17,23 +17,25 @@ export function sanitizeInput(rawInput: string): SanitizationResult {
 
   // 1. Check & strip <script>...</script> tags (case-insensitive)
   const scriptRegex = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
-  const noScripts = cleaned.replace(scriptRegex, '');
+  const noScripts = cleaned.replace(scriptRegex, "");
   if (noScripts !== cleaned) {
     injectionDetected = true;
     cleaned = noScripts;
   }
 
   // 2. Check & strip iframe, object, embed, link, meta, style tags
-  const tagsRegex = /<(iframe|object|embed|link|meta|style|form|svg|body|html|applet|audio|video|picture)\b[^>]*>([\s\S]*?)<\/\1>/gi;
-  const noTags = cleaned.replace(tagsRegex, '');
+  const tagsRegex =
+    /<(iframe|object|embed|link|meta|style|form|svg|body|html|applet|audio|video|picture)\b[^>]*>([\s\S]*?)<\/\1>/gi;
+  const noTags = cleaned.replace(tagsRegex, "");
   if (noTags !== cleaned) {
     injectionDetected = true;
     cleaned = noTags;
   }
 
   // Double check self-closing tag formats like <iframe ... />
-  const selfClosingTagsRegex = /<(iframe|object|embed|link|meta|style|form|svg|body|html|applet|audio|video|picture)\b[^>]*\/?>/gi;
-  const noSelfClosing = cleaned.replace(selfClosingTagsRegex, '');
+  const selfClosingTagsRegex =
+    /<(iframe|object|embed|link|meta|style|form|svg|body|html|applet|audio|video|picture)\b[^>]*\/?>/gi;
+  const noSelfClosing = cleaned.replace(selfClosingTagsRegex, "");
   if (noSelfClosing !== cleaned) {
     injectionDetected = true;
     cleaned = noSelfClosing;
@@ -41,7 +43,7 @@ export function sanitizeInput(rawInput: string): SanitizationResult {
 
   // 3. Strip event handlers (e.g., onclick=, onerror=, onload=)
   const eventHandlerRegex = /\bon\w+\s*=\s*(['"][^'"]*['"]|[^\s>]+)/gi;
-  const noEventHandlers = cleaned.replace(eventHandlerRegex, '');
+  const noEventHandlers = cleaned.replace(eventHandlerRegex, "");
   if (noEventHandlers !== cleaned) {
     injectionDetected = true;
     cleaned = noEventHandlers;
@@ -49,7 +51,7 @@ export function sanitizeInput(rawInput: string): SanitizationResult {
 
   // 4. Strip javascript: and data: URIs in assignments
   const uriSchemeRegex = /(javascript|data|vbscript):[^\s"'>]+/gi;
-  const noUris = cleaned.replace(uriSchemeRegex, '[REMOVED_URI]');
+  const noUris = cleaned.replace(uriSchemeRegex, "[REMOVED_URI]");
   if (noUris !== cleaned) {
     injectionDetected = true;
     cleaned = noUris;
@@ -58,12 +60,12 @@ export function sanitizeInput(rawInput: string): SanitizationResult {
   // 5. Basic HTML entity encoding to ensure no characters are rendered as markup
   // Although React handles text safely, this ensures full defense-in-depth before any processing.
   const escapedText = cleaned
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;')
-    .replace(/`/g, '&#x60;');
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;")
+    .replace(/`/g, "&#x60;");
 
   const hadDangerousHtmlCharacters = /[<>&]/.test(rawInput);
   const hadTrueInjection = injectionDetected || hadDangerousHtmlCharacters;
@@ -79,10 +81,10 @@ export function sanitizeInput(rawInput: string): SanitizationResult {
  */
 export function decodeSanitizedText(sanitized: string): string {
   return sanitized
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
     .replace(/&quot;/g, '"')
     .replace(/&#x27;/g, "'")
-    .replace(/&#x60;/g, '`');
+    .replace(/&#x60;/g, "`");
 }

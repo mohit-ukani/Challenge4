@@ -1,8 +1,11 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { TelemetryPayload, ContextPayload, SystemStatus } from '../core/types';
-import { generateSituationalAnalysis, GeminiAnalysisResult } from '../core/gemini-service';
+import { useState, useEffect, useRef, useCallback } from "react";
+import { TelemetryPayload, ContextPayload, SystemStatus } from "../core/types";
+import {
+  generateSituationalAnalysis,
+  GeminiAnalysisResult,
+} from "../core/gemini-service";
 
-export type AnalysisState = 'idle' | 'loading' | 'success' | 'error';
+export type AnalysisState = "idle" | "loading" | "success" | "error";
 
 export interface GeminiAnalysisHook {
   result: GeminiAnalysisResult | null;
@@ -25,10 +28,10 @@ export function useGeminiAnalysis(
   telemetry: TelemetryPayload,
   context: ContextPayload,
   systemStatus: SystemStatus,
-  locale: string
+  locale: string,
 ): GeminiAnalysisHook {
   const [result, setResult] = useState<GeminiAnalysisResult | null>(null);
-  const [analysisState, setAnalysisState] = useState<AnalysisState>('idle');
+  const [analysisState, setAnalysisState] = useState<AnalysisState>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [lastAnalyzedAt, setLastAnalyzedAt] = useState<number | null>(null);
 
@@ -38,7 +41,9 @@ export function useGeminiAnalysis(
   const prevLocaleRef = useRef<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const abortRef = useRef<AbortController | null>(null);
-  const cacheRef = useRef<Record<string, { result: GeminiAnalysisResult; timestamp: number }>>({});
+  const cacheRef = useRef<
+    Record<string, { result: GeminiAnalysisResult; timestamp: number }>
+  >({});
 
   const runAnalysis = useCallback(async () => {
     // Generate a unique cache key based on current telemetry state and locale configuration
@@ -46,7 +51,7 @@ export function useGeminiAnalysis(
 
     if (cacheRef.current[cacheKey]) {
       setResult(cacheRef.current[cacheKey].result);
-      setAnalysisState('success');
+      setAnalysisState("success");
       setLastAnalyzedAt(cacheRef.current[cacheKey].timestamp);
       return;
     }
@@ -55,7 +60,7 @@ export function useGeminiAnalysis(
     if (abortRef.current) abortRef.current.abort();
     abortRef.current = new AbortController();
 
-    setAnalysisState('loading');
+    setAnalysisState("loading");
     setErrorMessage(null);
 
     try {
@@ -63,24 +68,25 @@ export function useGeminiAnalysis(
         telemetry,
         context,
         systemStatus,
-        locale
+        locale,
       );
-      
+
       // Store in cache
       cacheRef.current[cacheKey] = {
         result: analysisResult,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
 
       setResult(analysisResult);
-      setAnalysisState('success');
+      setAnalysisState("success");
       setLastAnalyzedAt(cacheRef.current[cacheKey].timestamp);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Unknown error occurred.';
+      const message =
+        err instanceof Error ? err.message : "Unknown error occurred.";
       // Don't surface abort errors (user triggered a new request)
-      if (message.includes('aborted') || message.includes('abort')) return;
+      if (message.includes("aborted") || message.includes("abort")) return;
       setErrorMessage(message);
-      setAnalysisState('error');
+      setAnalysisState("error");
     }
   }, [telemetry, context, systemStatus, locale]);
 
@@ -111,7 +117,8 @@ export function useGeminiAnalysis(
    * Re-trigger when locale changes so the briefing is in the right language.
    */
   useEffect(() => {
-    const localeChanged = prevLocaleRef.current !== null && prevLocaleRef.current !== locale;
+    const localeChanged =
+      prevLocaleRef.current !== null && prevLocaleRef.current !== locale;
     prevLocaleRef.current = locale;
 
     if (localeChanged && result !== null) {
