@@ -92,7 +92,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
         <LocaleSelector
           currentLocale={currentLocale}
           onLocaleChange={onLocaleChange}
-          label="Locale"
+          label={t('ui.locale')}
         />
       </div>
     </header>

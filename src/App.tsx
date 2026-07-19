@@ -33,7 +33,7 @@ export const App: React.FC = () => {
   return (
     <>
       {/* Keyboard navigation skip link helper */}
-      <SkipLink />
+      <SkipLink locale={locale} />
 
       <div className="app-container">
         {/* Main interactive panel */}

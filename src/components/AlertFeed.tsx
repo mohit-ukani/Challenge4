@@ -125,7 +125,7 @@ export const AlertFeed: React.FC<AlertFeedProps> = React.memo(({
                     textTransform: 'uppercase',
                   }}
                 >
-                  {item.type}
+                  {item.type === 'alert' ? t('ui.alert') : t('ui.warning')}
                 </span>
                 <span style={{ color: 'var(--text-primary)', wordBreak: 'break-word' }}>{item.text}</span>
               </div>

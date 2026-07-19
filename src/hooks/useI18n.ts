@@ -9,10 +9,11 @@ import { translate, isRTLLocale } from '../core/i18n';
  * @param locale Active locale prop passed from parent (driven by the telemetry reducer)
  */
 export function useI18n(locale: Locale = 'en') {
-  // Sync HTML document attributes on locale switch (A11y/SEO alignment)
+  // Sync HTML document attributes and document title on locale switch (A11y/SEO alignment)
   useEffect(() => {
     document.documentElement.lang = locale;
     document.documentElement.dir = isRTLLocale(locale) ? 'rtl' : 'ltr';
+    document.title = translate('app.title', {}, locale);
   }, [locale]);
 
   const t = useCallback((key: string, params: Record<string, string | number> = {}) => {

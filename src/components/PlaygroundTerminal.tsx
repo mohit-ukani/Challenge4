@@ -16,6 +16,30 @@ interface PlaygroundTerminalProps {
  * Playground panel for evaluators.
  * Features presets, validation logging, and XSS attack mitigation banners.
  */
+// Static preset templates defined outside of the component to prevent garbage collection churn
+const PRESET_ALPHA_TELEMETRY = {
+  zone_id: 'ZONE-A1',
+  current_crowd_density: 42,
+  ambient_noise_levels: 65,
+  incident_flag: false,
+};
+
+const PRESET_BETA_TELEMETRY = {
+  zone_id: 'ZONE-B3',
+  current_crowd_density: 92,
+  ambient_noise_levels: 110,
+  incident_flag: true,
+};
+
+const PRESET_GAMMA_RAW = `{
+  "zone_id": "",
+  "current_crowd_density": "ninety-two-percent",
+  "ambient_noise_levels": 300,
+  "incident_flag": "malformed_string_flag",
+  "local_time": "twenty-four-hours",
+  "stadium_capacity_limit": -500
+}`;
+
 export const PlaygroundTerminal: React.FC<PlaygroundTerminalProps> = React.memo(({
   onInjectRawPayload,
   onInjectDirectState,
@@ -28,66 +52,48 @@ export const PlaygroundTerminal: React.FC<PlaygroundTerminalProps> = React.memo(
   const { t } = useI18n(locale as any);
   const [jsonText, setJsonText] = useState('');
 
-  // Preset payload templates
-  const presets = {
-    alpha: {
-      telemetry: {
-        zone_id: 'ZONE-A1',
-        current_crowd_density: 42,
-        ambient_noise_levels: 65,
-        incident_flag: false
-      },
+  // Sync JSON text field with presets on initial load or reset
+  useEffect(() => {
+    const alphaInit = {
+      telemetry: PRESET_ALPHA_TELEMETRY,
       context: {
         local_time: '14:30',
         stadium_capacity_limit: 80000,
-        language_preference: locale as Locale
-      }
-    },
-    beta: {
-      telemetry: {
-        zone_id: 'ZONE-B3',
-        current_crowd_density: 92,
-        ambient_noise_levels: 110,
-        incident_flag: true
+        language_preference: locale as Locale,
       },
-      context: {
-        local_time: '20:15',
-        stadium_capacity_limit: 80000,
-        language_preference: locale as Locale
-      }
-    },
-    gammaRaw: `{
-  "zone_id": "",
-  "current_crowd_density": "ninety-two-percent",
-  "ambient_noise_levels": 300,
-  "incident_flag": "malformed_string_flag",
-  "local_time": "twenty-four-hours",
-  "stadium_capacity_limit": -500
-}`
-  };
-
-  // Sync JSON text field with presets on initial load or reset
-  useEffect(() => {
-    setJsonText(JSON.stringify(presets.alpha, null, 2));
+    };
+    setJsonText(JSON.stringify(alphaInit, null, 2));
   }, [locale]);
 
   const handleApplyPresetAlpha = () => {
-    const data = { ...presets.alpha };
-    data.context.language_preference = locale as Locale;
+    const data = {
+      telemetry: PRESET_ALPHA_TELEMETRY,
+      context: {
+        local_time: '14:30',
+        stadium_capacity_limit: 80000,
+        language_preference: locale as Locale,
+      },
+    };
     setJsonText(JSON.stringify(data, null, 2));
     onInjectDirectState(data.telemetry, data.context);
   };
 
   const handleApplyPresetBeta = () => {
-    const data = { ...presets.beta };
-    data.context.language_preference = locale as Locale;
+    const data = {
+      telemetry: PRESET_BETA_TELEMETRY,
+      context: {
+        local_time: '20:15',
+        stadium_capacity_limit: 80000,
+        language_preference: locale as Locale,
+      },
+    };
     setJsonText(JSON.stringify(data, null, 2));
     onInjectDirectState(data.telemetry, data.context);
   };
 
   const handleApplyPresetGamma = () => {
-    setJsonText(presets.gammaRaw);
-    onInjectRawPayload(presets.gammaRaw);
+    setJsonText(PRESET_GAMMA_RAW);
+    onInjectRawPayload(PRESET_GAMMA_RAW);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -96,8 +102,14 @@ export const PlaygroundTerminal: React.FC<PlaygroundTerminalProps> = React.memo(
   };
 
   const handleReset = () => {
-    const data = { ...presets.alpha };
-    data.context.language_preference = locale as Locale;
+    const data = {
+      telemetry: PRESET_ALPHA_TELEMETRY,
+      context: {
+        local_time: '14:30',
+        stadium_capacity_limit: 80000,
+        language_preference: locale as Locale,
+      },
+    };
     setJsonText(JSON.stringify(data, null, 2));
     onReset();
   };

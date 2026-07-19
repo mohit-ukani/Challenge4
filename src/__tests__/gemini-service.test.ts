@@ -55,7 +55,7 @@ describe('Gemini AI Service Client Suite', () => {
 
     expect(fetchMock).toHaveBeenCalled();
     const fetchArgs = fetchMock.mock.calls[0];
-    expect(fetchArgs[0]).toContain('/api-gemini/v1beta/models/gemini-2.5-flash:generateContent');
+    expect(fetchArgs[0]).toContain('/api-gemini/v1beta/models/gemini-3.5-flash:generateContent');
     expect(fetchArgs[0]).toContain('key=MOCK_KEY');
 
     const requestBody = JSON.parse(fetchArgs[1]?.body as string);

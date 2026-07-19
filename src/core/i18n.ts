@@ -44,6 +44,10 @@ const dictionaries: Record<Locale, Translations> = {
     'ui.waiting_stream': 'Waiting for injection stream...',
     'ui.trace_loading': 'Trace diagnostics loading...',
     'ui.sensor_calibration': 'Sensor Calibration range: 0 - 140 dB',
+    'ui.locale': 'Locale',
+    'ui.alert': 'Alert',
+    'ui.warning': 'Warning',
+    'ui.skip_link': 'Skip to main content',
 
     // AI analyst panel translations
     'ai.title': 'Gemini AI Situational Analyst',
@@ -85,7 +89,7 @@ const dictionaries: Record<Locale, Translations> = {
     'field.noise': 'Nivel de Ruido Ambiental',
     'field.incident': 'Bandera de Incidente',
     'field.incident_active': 'INCIDENTE ACTIVO REPORTADO',
-    'field.incident_none': 'Ningún Incidente Activo',
+    'field.incident_none': 'Ningún Incidente Actente',
     
     // UI elements
     'ui.presets': 'Ajustes Preestablecidos de Validación de Escenarios',
@@ -106,6 +110,10 @@ const dictionaries: Record<Locale, Translations> = {
     'ui.waiting_stream': 'Esperando flujo de inyección...',
     'ui.trace_loading': 'Cargando diagnósticos de traza...',
     'ui.sensor_calibration': 'Rango de calibración del sensor: 0 - 140 dB',
+    'ui.locale': 'Idioma',
+    'ui.alert': 'Alerta',
+    'ui.warning': 'Advertencia',
+    'ui.skip_link': 'Omitir e ir al contenido principal',
 
     // AI analyst panel translations
     'ai.title': 'Analista de Situación de IA Gemini',
@@ -168,6 +176,10 @@ const dictionaries: Record<Locale, Translations> = {
     'ui.waiting_stream': 'En attente du flux d\'injection...',
     'ui.trace_loading': 'Chargement des diagnostics de trace...',
     'ui.sensor_calibration': 'Plage de calibrage du capteur: 0 - 140 dB',
+    'ui.locale': 'Langue',
+    'ui.alert': 'Alerte',
+    'ui.warning': 'Avertissement',
+    'ui.skip_link': 'Passer au contenu principal',
 
     // AI analyst panel translations
     'ai.title': 'Analyste de Situation IA Gemini',
@@ -230,6 +242,10 @@ const dictionaries: Record<Locale, Translations> = {
     'ui.waiting_stream': 'بانتظار تدفق الحقن...',
     'ui.trace_loading': 'جاري تحميل تتبع التشخيص...',
     'ui.sensor_calibration': 'نطاق معايرة المستشعر: 0 - 140 ديسيبل',
+    'ui.locale': 'اللغة',
+    'ui.alert': 'تنبيه',
+    'ui.warning': 'تحذير',
+    'ui.skip_link': 'تخطي إلى المحتوى الرئيسي',
 
     // AI analyst panel translations
     'ai.title': 'محلل الوضع القائم على الذكاء الاصطناعي جيميناي',
