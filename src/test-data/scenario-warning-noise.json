@@ -1,0 +1,9 @@
+{
+  "zone_id": "ZONE-D4",
+  "current_crowd_density": 55,
+  "ambient_noise_levels": 102,
+  "incident_flag": false,
+  "local_time": "18:45",
+  "stadium_capacity_limit": 80000,
+  "language_preference": "ar"
+}

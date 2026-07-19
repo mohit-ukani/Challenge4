@@ -1,0 +1,277 @@
+/* OKLCH Design System Tokens for Smart Stadium Operations Co-Pilot */
+:root {
+  /* Color Ramp (Zinc/Slate base) */
+  --bg-primary: oklch(0.13 0.005 260);         /* App background (near-black slate) */
+  --bg-surface: oklch(0.18 0.008 260);         /* Card / panel surfaces */
+  --bg-surface-elevated: oklch(0.22 0.01 260); /* Elevated components, inputs */
+  --border: oklch(0.28 0.008 260);             /* Subtle divider borders */
+  --border-focus: oklch(0.65 0.2 165);         /* Emerald border for active state/focus */
+
+  /* Text & Labels (All contrasts strictly >= 4.5:1, typical body is 7:1+) */
+  --text-primary: oklch(0.95 0.005 260);       /* Monochromatic off-white */
+  --text-secondary: oklch(0.72 0.01 260);      /* Muted secondary text */
+  --text-tertiary: oklch(0.55 0.01 260);       /* Disabled/placeholder text */
+
+  /* Status Colors (Calibrated for high visibility and contrast) */
+  --accent: oklch(0.65 0.2 165);               /* Emerald status (nominal) */
+  --accent-warning: oklch(0.78 0.15 85);       /* Amber status (warning) */
+  --accent-danger: oklch(0.62 0.22 25);        /* Red status (alert) */
+
+  --bg-danger-mute: oklch(0.22 0.05 25);       /* Muted red for warning card background */
+  --bg-warning-mute: oklch(0.22 0.04 85);      /* Muted amber for warning card background */
+
+  /* Spacing Scale (4px base) */
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-6: 1.5rem;   /* 24px */
+  --space-8: 2rem;     /* 32px */
+  --space-12: 3rem;    /* 48px */
+  --space-16: 4rem;    /* 64px */
+
+  /* Corner Radius - Strict Uniform Sharp Grid System */
+  --radius: 2px;
+
+  /* Typography Stack */
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  
+  /* Transition / Motion Speed */
+  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* CSS Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100dvh;
+  line-height: 1.6;
+}
+
+/* Base Headings & Hierarchy */
+h1, h2, h3, h4 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+/* Keyboard Accessibility Focus State */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Accessibility Skip Navigation Link */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  background: var(--bg-surface-elevated);
+  color: var(--accent);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  z-index: 100;
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: var(--radius);
+  transition: top var(--transition-fast);
+}
+
+.skip-link:focus {
+  top: var(--space-2);
+}
+
+/* Screen Reader Only Utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Base Layout Container (2-Column Grid Desktop, Collapse to 1-Column Tablet/Mobile) */
+.app-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: 100dvh;
+}
+
+@media (min-width: 1024px) {
+  .app-container {
+    grid-template-columns: 1fr 420px;
+  }
+}
+
+/* Main Dashboard Panel */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-6);
+  gap: var(--space-6);
+  overflow-y: auto;
+}
+
+/* Aside Playground Terminal */
+.aside-panel {
+  background-color: var(--bg-surface);
+  border-top: 1px solid var(--border);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+@media (min-width: 1024px) {
+  .aside-panel {
+    border-top: none;
+    border-left: 1px solid var(--border);
+    height: 100vh;
+    overflow-y: auto;
+    position: sticky;
+    top: 0;
+  }
+}
+
+/* Arabic RTL support */
+[dir="rtl"] .aside-panel {
+  @media (min-width: 1024px) {
+    border-left: none;
+    border-right: 1px solid var(--border);
+  }
+}
+
+/* Custom layout panels */
+.card-panel {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.card-panel-title {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+/* System Alerts Style */
+.alert-item {
+  border-left: 3px solid var(--accent);
+  padding-left: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.alert-item.alert-alert {
+  border-left-color: var(--accent-danger);
+}
+
+.alert-item.alert-warning {
+  border-left-color: var(--accent-warning);
+}
+
+/* RTL translation utility overrides for RTL languages */
+[dir="rtl"] .alert-item {
+  border-left: none;
+  border-right: 3px solid var(--accent);
+  padding-left: 0;
+  padding-right: var(--space-3);
+}
+
+[dir="rtl"] .alert-item.alert-alert {
+  border-right-color: var(--accent-danger);
+}
+
+[dir="rtl"] .alert-item.alert-warning {
+  border-right-color: var(--accent-warning);
+}
+
+/* Motion Preferences Support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-delay: -1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    background-attachment: initial !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+  
+  .pulsing-dot {
+    animation: none !important;
+  }
+}
+
+/* AI Analyst Panel — Spinner */
+.ai-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: ai-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes ai-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* AI Analyst Panel — Skeleton shimmer */
+.ai-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-surface-elevated) 0%,
+    var(--border) 40%,
+    var(--bg-surface-elevated) 80%
+  );
+  background-size: 200% 100%;
+  border-radius: var(--radius);
+  animation: ai-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes ai-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Status Pulsing Dot Animation */
+@keyframes status-pulse {
+  0% { opacity: 0.4; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 0.4; transform: scale(0.9); }
+}
+
+/* Incident Alarms Blink Animation */
+@keyframes blink {
+  0% { opacity: 0.2; }
+  100% { opacity: 1; }
+}
+
